@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>GuardianAI - Security Policies</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+</head>
+
+<body>
+
+<div class="container mt-5">
+
+    <!-- HEADER -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2>
+                🛡️ GuardianAI - Security Policies
+            </h2>
+
+            <p class="text-muted">
+                Rules used to control and protect AI actions.
+            </p>
+
+        </div>
+
+        <a href="/" class="btn btn-secondary">
+            Dashboard
+        </a>
+
+    </div>
+
+
+    <!-- INTRODUCTION -->
+
+    <div class="alert alert-info rounded-4">
+
+        <strong>GuardianAI Policy Engine</strong>
+
+        <br>
+
+        GuardianAI evaluates every AI action according to
+        its potential risk and applies the appropriate
+        security policy.
+
+    </div>
+
+
+    <!-- POLICY CARDS -->
+
+    <div class="row g-4">
+
+
+        <!-- LOW RISK -->
+
+        <div class="col-md-4">
+
+            <div class="card shadow border-0 rounded-4 h-100">
+
+                <div class="card-body p-4 text-center">
+
+                    <div style="font-size: 50px;">
+                        🟢
+                    </div>
+
+                    <h4 class="mt-3">
+                        Low Risk
+                    </h4>
+
+                    <p class="text-muted">
+                        Score: 0–39
+                    </p>
+
+                    <hr>
+
+                    <h5>
+                        Policy: ALLOW
+                    </h5>
+
+                    <p>
+                        Low-risk actions can be performed
+                        automatically without human intervention.
+                    </p>
+
+                    <span class="badge bg-success">
+                        AUTOMATICALLY ALLOWED
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- MEDIUM RISK -->
+
+        <div class="col-md-4">
+
+            <div class="card shadow border-0 rounded-4 h-100">
+
+                <div class="card-body p-4 text-center">
+
+                    <div style="font-size: 50px;">
+                        🟡
+                    </div>
+
+                    <h4 class="mt-3">
+                        Medium Risk
+                    </h4>
+
+                    <p class="text-muted">
+                        Score: 40–79
+                    </p>
+
+                    <hr>
+
+                    <h5>
+                        Policy: HUMAN APPROVAL
+                    </h5>
+
+                    <p>
+                        Medium-risk actions must be reviewed
+                        by a human before they can proceed.
+                    </p>
+
+                    <span class="badge bg-warning text-dark">
+                        HUMAN REVIEW REQUIRED
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- HIGH RISK -->
+
+        <div class="col-md-4">
+
+            <div class="card shadow border-0 rounded-4 h-100">
+
+                <div class="card-body p-4 text-center">
+
+                    <div style="font-size: 50px;">
+                        🔴
+                    </div>
+
+                    <h4 class="mt-3">
+                        High Risk
+                    </h4>
+
+                    <p class="text-muted">
+                        Score: 80–100
+                    </p>
+
+                    <hr>
+
+                    <h5>
+                        Policy: BLOCK
+                    </h5>
+
+                    <p>
+                        High-risk actions are automatically
+                        blocked to prevent unsafe operations.
+                    </p>
+
+                    <span class="badge bg-danger">
+                        AUTOMATICALLY BLOCKED
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ACTION POLICY TABLE -->
+
+    <div class="card shadow border-0 rounded-4 mt-4">
+
+        <div class="card-body p-4">
+
+            <h4 class="mb-4">
+                AI Action Security Policies
+            </h4>
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-dark">
+
+                        <tr>
+
+                            <th>AI Action</th>
+
+                            <th>Risk Level</th>
+
+                            <th>Score</th>
+
+                            <th>Security Decision</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                📧 Read Email
+                            </td>
+
+                            <td>
+                                <span class="badge bg-success">
+                                    LOW
+                                </span>
+                            </td>
+
+                            <td>
+                                20/100
+                            </td>
+
+                            <td>
+                                <span class="badge bg-success">
+                                    ALLOW
+                                </span>
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                📄 Generate Report
+                            </td>
+
+                            <td>
+                                <span class="badge bg-success">
+                                    LOW
+                                </span>
+                            </td>
+
+                            <td>
+                                20/100
+                            </td>
+
+                            <td>
+                                <span class="badge bg-success">
+                                    ALLOW
+                                </span>
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                ⚙️ Modify Settings
+                            </td>
+
+                            <td>
+                                <span class="badge bg-warning text-dark">
+                                    MEDIUM
+                                </span>
+                            </td>
+
+                            <td>
+                                60/100
+                            </td>
+
+                            <td>
+                                <span class="badge bg-warning text-dark">
+                                    HUMAN APPROVAL
+                                </span>
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                👥 Access Customer Data
+                            </td>
+
+                            <td>
+                                <span class="badge bg-warning text-dark">
+                                    MEDIUM
+                                </span>
+                            </td>
+
+                            <td>
+                                60/100
+                            </td>
+
+                            <td>
+                                <span class="badge bg-warning text-dark">
+                                    HUMAN APPROVAL
+                                </span>
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                🗑️ Delete Files
+                            </td>
+
+                            <td>
+                                <span class="badge bg-danger">
+                                    HIGH
+                                </span>
+                            </td>
+
+                            <td>
+                                95/100
+                            </td>
+
+                            <td>
+                                <span class="badge bg-danger">
+                                    BLOCK
+                                </span>
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                🗄️ Delete Database
+                            </td>
+
+                            <td>
+                                <span class="badge bg-danger">
+                                    HIGH
+                                </span>
+                            </td>
+
+                            <td>
+                                95/100
+                            </td>
+
+                            <td>
+                                <span class="badge bg-danger">
+                                    BLOCK
+                                </span>
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                🔐 Change Permissions
+                            </td>
+
+                            <td>
+                                <span class="badge bg-danger">
+                                    HIGH
+                                </span>
+                            </td>
+
+                            <td>
+                                95/100
+                            </td>
+
+                            <td>
+                                <span class="badge bg-danger">
+                                    BLOCK
+                                </span>
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- SECURITY PRINCIPLE -->
+
+    <div class="card shadow border-0 rounded-4 mt-4">
+
+        <div class="card-body p-4">
+
+            <h4>
+                🔐 GuardianAI Security Principle
+            </h4>
+
+            <p class="mt-3">
+
+                GuardianAI follows a risk-based decision model:
+                safe actions are allowed automatically, medium-risk
+                actions require human approval, and high-risk actions
+                are blocked automatically.
+
+            </p>
+
+            <div class="text-center mt-4">
+
+                <span class="badge bg-success fs-6 p-2">
+                    LOW → ALLOW
+                </span>
+
+                <span class="mx-2">
+                    →
+                </span>
+
+                <span class="badge bg-warning text-dark fs-6 p-2">
+                    MEDIUM → HUMAN APPROVAL
+                </span>
+
+                <span class="mx-2">
+                    →
+                </span>
+
+                <span class="badge bg-danger fs-6 p-2">
+                    HIGH → BLOCK
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- NAVIGATION -->
+
+    <div class="text-center mt-4 mb-5">
+
+        <a href="/risk"
+           class="btn btn-primary me-2">
+
+            🔍 Risk Center
+
+        </a>
+
+        <a href="/approval"
+           class="btn btn-warning me-2">
+
+            👤 Approval Center
+
+        </a>
+
+        <a href="/audit_logs"
+           class="btn btn-dark">
+
+            📜 Audit Logs
+
+        </a>
+
+    </div>
+
+
+</div>
+
+</body>
+
+</html>

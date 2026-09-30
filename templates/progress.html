@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Learning Progress | GuardianAI</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+        rel="stylesheet"
+    >
+
+    <style>
+        body {
+            background: #f5f7fb;
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar {
+            background: #111827;
+        }
+
+        .navbar-brand {
+            color: white !important;
+            font-weight: bold;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #111827, #2563eb);
+            color: white;
+            padding: 40px 0;
+        }
+
+        .card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 5px 18px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 25px;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .topic-card {
+            padding: 18px;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .section-title {
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .recommendation {
+            background: #eff6ff;
+            border-left: 5px solid #2563eb;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .history-row {
+            padding: 14px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .history-row:last-child {
+            border-bottom: none;
+        }
+
+        .progress {
+            height: 18px;
+            border-radius: 10px;
+        }
+
+        .action-card {
+            padding: 20px;
+            text-align: center;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-dark">
+    <div class="container">
+
+        <a class="navbar-brand" href="/dashboard">
+            <i class="bi bi-shield-check"></i>
+            GuardianAI
+        </a>
+
+        <a href="/learning" class="btn btn-light btn-sm">
+            <i class="bi bi-arrow-left"></i>
+            Back to Learning
+        </a>
+
+    </div>
+</nav>
+
+
+<section class="hero">
+
+    <div class="container">
+
+        <h1 class="fw-bold">
+            <i class="bi bi-graph-up-arrow"></i>
+            Learning Progress
+        </h1>
+
+        <p class="mb-0">
+            Track student performance, topic mastery and personalized learning progress.
+        </p>
+
+    </div>
+
+</section>
+
+
+<div class="container py-4">
+
+
+    <!-- STUDENT SELECTION -->
+
+    <div class="card p-4">
+
+        <h4 class="section-title">
+            <i class="bi bi-person-check"></i>
+            Select Student
+        </h4>
+
+        <form method="GET" action="/learning/progress">
+
+            <div class="row">
+
+                <div class="col-md-9">
+
+                    <select
+                        name="student_id"
+                        class="form-select"
+                        required
+                    >
+
+                        <option value="">
+                            Select a student
+                        </option>
+
+                        {% for student in students %}
+
+                        <option
+                            value="{{ student.id }}"
+                            {% if selected_student and student.id == selected_student.id %}
+                            selected
+                            {% endif %}
+                        >
+
+                            {{ student.name }}
+
+                            {% if student.email %}
+                            - {{ student.email }}
+                            {% endif %}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-3 mt-2 mt-md-0">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary w-100"
+                    >
+                        View Progress
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    {% if selected_student %}
+
+
+    <!-- STUDENT INFORMATION -->
+
+    <div class="card p-4">
+
+        <h3>
+            <i class="bi bi-person-circle"></i>
+            {{ selected_student.name }}
+        </h3>
+
+        {% if selected_student.email %}
+
+        <p class="text-muted mb-0">
+            {{ selected_student.email }}
+        </p>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- STATISTICS -->
+
+    <div class="row">
+
+        <div class="col-md-3">
+
+            <div class="card stat-card">
+
+                <h6 class="text-muted">
+                    Average Score
+                </h6>
+
+                <div class="stat-number">
+                    {{ average_score|default(0)|float|round(1) }}%
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="card stat-card">
+
+                <h6 class="text-muted">
+                    Assessments
+                </h6>
+
+                <div class="stat-number">
+                    {{ total_assessments|default(0) }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="card stat-card">
+
+                <h6 class="text-muted">
+                    Latest Score
+                </h6>
+
+                <div class="stat-number">
+                    {{ latest_score|default(0)|float|round(1) }}%
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="card stat-card">
+
+                <h6 class="text-muted">
+                    Improvement
+                </h6>
+
+                <div class="stat-number">
+
+                    {% if improvement|default(0)|float > 0 %}
+                        +{{ improvement|float|round(1) }}%
+                    {% elif improvement|default(0)|float < 0 %}
+                        {{ improvement|float|round(1) }}%
+                    {% else %}
+                        0%
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- PERFORMANCE SUMMARY -->
+
+    <div class="card p-4">
+
+        <h4 class="section-title">
+            <i class="bi bi-bar-chart"></i>
+            Performance Summary
+        </h4>
+
+        <div class="row text-center">
+
+            <div class="col-md-4">
+
+                <div class="alert alert-success">
+
+                    <h5>
+                        <i class="bi bi-check-circle"></i>
+                        Strong Topics
+                    </h5>
+
+                    <h2>
+                        {{ strong_topics|default(0) }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+                <div class="alert alert-warning">
+
+                    <h5>
+                        <i class="bi bi-exclamation-circle"></i>
+                        Practice Topics
+                    </h5>
+
+                    <h2>
+                        {{ practice_topics|default(0) }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+                <div class="alert alert-danger">
+
+                    <h5>
+                        <i class="bi bi-x-circle"></i>
+                        Priority Topics
+                    </h5>
+
+                    <h2>
+                        {{ priority_topics|default(0) }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- AI INSIGHT -->
+
+    <div class="card p-4">
+
+        <h4 class="section-title">
+            <i class="bi bi-robot"></i>
+            GuardianAI Learning Insight
+        </h4>
+
+        <div class="recommendation">
+
+            <h5>
+                Personalized Recommendation
+            </h5>
+
+            <p class="mb-0">
+                {{ recommendation|default("Complete more assessments to generate personalized recommendations.") }}
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- TOPIC PERFORMANCE -->
+
+    <div class="card p-4">
+
+        <h4 class="section-title">
+            <i class="bi bi-diagram-3"></i>
+            Topic Performance
+        </h4>
+
+        {% if topic_performance %}
+
+            {% for topic in topic_performance %}
+
+            <div class="topic-card">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <strong>
+                        {{ topic.topic }}
+                    </strong>
+
+                    <strong>
+                        {{ topic.average_score|float|round(1) }}%
+                    </strong>
+
+                </div>
+
+                <div class="progress mt-2">
+
+                    <div
+                        class="progress-bar"
+                        role="progressbar"
+                        style="width: {{ topic.average_score|float }}%;"
+                        aria-valuenow="{{ topic.average_score|float }}"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                    >
+                        {{ topic.average_score|float|round(1) }}%
+                    </div>
+
+                </div>
+
+                <div class="mt-2 text-muted">
+
+                    <small>
+                        Attempts:
+                        {{ topic.attempts|default(0) }}
+                    </small>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="alert alert-info">
+
+                No topic performance data available yet.
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- ASSESSMENT HISTORY -->
+
+    <div class="card p-4">
+
+        <h4 class="section-title">
+            <i class="bi bi-clock-history"></i>
+            Assessment History
+        </h4>
+
+        {% if performance %}
+
+            {% for item in performance %}
+
+            <div class="history-row">
+
+                <div class="row align-items-center">
+
+                    <div class="col-md-4">
+
+                        <strong>
+                            {{ item.assessment_name }}
+                        </strong>
+
+                    </div>
+
+                    <div class="col-md-3">
+
+                        <span class="badge bg-primary">
+                            {{ item.topic }}
+                        </span>
+
+                    </div>
+
+                    <div class="col-md-2">
+
+                        <strong>
+                            {{ item.score|float|round(1) }}%
+                        </strong>
+
+                    </div>
+
+                    <div class="col-md-3 text-muted">
+
+                        <small>
+                            {{ item.created_at }}
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="alert alert-info">
+
+                No assessments have been completed yet.
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- MULTI MODAL ASSESSMENT -->
+
+    <div class="card p-4">
+
+        <h4 class="section-title">
+            <i class="bi bi-grid"></i>
+            Continue Assessment
+        </h4>
+
+        <div class="row g-3">
+
+            <div class="col-md-3">
+
+                <div class="card action-card">
+
+                    <h5>
+                        📝 Adaptive Quiz
+                    </h5>
+
+                    <p class="text-muted">
+                        Practice weak topics.
+                    </p>
+
+                    <a
+                        href="/learning/questions?student_id={{ selected_student.id }}"
+                        class="btn btn-primary"
+                    >
+                        Start Quiz
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <div class="card action-card">
+
+                    <h5>
+                        🎤 Voice
+                    </h5>
+
+                    <p class="text-muted">
+                        Evaluate spoken answers.
+                    </p>
+
+                    <a
+                        href="/voice"
+                        class="btn btn-success"
+                    >
+                        Voice Assessment
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <div class="card action-card">
+
+                    <h5>
+                        ✍️ Written
+                    </h5>
+
+                    <p class="text-muted">
+                        Evaluate handwritten answers.
+                    </p>
+
+                    <a
+                        href="/handwritten"
+                        class="btn btn-warning"
+                    >
+                        Written Assessment
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <div class="card action-card">
+
+                    <h5>
+                        📄 Assignment
+                    </h5>
+
+                    <p class="text-muted">
+                        Evaluate documents and assignments.
+                    </p>
+
+                    <a
+                        href="/document_evaluation"
+                        class="btn btn-info"
+                    >
+                        Evaluate Assignment
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- NEXT STEP -->
+
+    <div class="card p-4 text-center">
+
+        <h4>
+            🚀 Continue Personalized Learning
+        </h4>
+
+        <p class="text-muted">
+            GuardianAI can use the student's performance to
+            recommend the next learning activity.
+        </p>
+
+        <a
+            href="/learning/questions?student_id={{ selected_student.id }}"
+            class="btn btn-primary"
+        >
+            Start Adaptive Learning
+        </a>
+
+    </div>
+
+
+    {% else %}
+
+
+    <!-- NO STUDENT SELECTED -->
+
+    <div class="card p-5 text-center">
+
+        <h2>
+            👋 Welcome to Learning Progress
+        </h2>
+
+        <p class="text-muted mt-3">
+            Select a student above to view their performance,
+            topic mastery and assessment history.
+        </p>
+
+    </div>
+
+
+    {% endif %}
+
+</div>
+
+
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js">
+</script>
+
+</body>
+</html>

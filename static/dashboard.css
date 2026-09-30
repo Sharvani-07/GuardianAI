@@ -1,0 +1,62 @@
+body{
+
+    background:#F5F7FB;
+
+    font-family:Segoe UI,sans-serif;
+}
+
+.sidebar{
+
+    width:250px;
+
+    height:100vh;
+
+    background:#111827;
+
+    padding:20px;
+
+    position:fixed;
+}
+
+.logo{
+
+    color:white;
+
+    margin-bottom:40px;
+
+    text-align:center;
+}
+
+.sidebar a{
+
+    display:block;
+
+    color:white;
+
+    text-decoration:none;
+
+    padding:15px;
+
+    margin-bottom:10px;
+
+    border-radius:10px;
+}
+
+.sidebar a:hover{
+
+    background:#2563EB;
+}
+
+.main-content{
+
+    margin-left:260px;
+
+    padding:20px;
+}
+
+.card{
+
+    border:none;
+
+    border-radius:15px;
+}

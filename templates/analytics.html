@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>GuardianAI - Analytics</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+</head>
+
+<body>
+
+<div class="container mt-5">
+
+    <!-- HEADER -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2>
+                📊 GuardianAI - Analytics
+            </h2>
+
+            <p class="text-muted">
+                Monitor AI security decisions and system activity.
+            </p>
+
+        </div>
+
+        <a href="/" class="btn btn-secondary">
+            Dashboard
+        </a>
+
+    </div>
+
+
+    <!-- SUMMARY -->
+
+    <div class="card shadow border-0 rounded-4 mb-4">
+
+        <div class="card-body p-4">
+
+            <h4 class="mb-4">
+                Security Overview
+            </h4>
+
+
+            <div class="row g-4">
+
+
+                <!-- TOTAL -->
+
+                <div class="col-md-4">
+
+                    <div class="card border-0 bg-light rounded-4 h-100">
+
+                        <div class="card-body text-center">
+
+                            <h2>
+                                📊
+                            </h2>
+
+                            <h3>
+                                {{ total_logs }}
+                            </h3>
+
+                            <p class="text-muted mb-0">
+                                Total Evaluations
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ALLOWED -->
+
+                <div class="col-md-4">
+
+                    <div class="card border-0 bg-success-subtle rounded-4 h-100">
+
+                        <div class="card-body text-center">
+
+                            <h2>
+                                🟢
+                            </h2>
+
+                            <h3>
+                                {{ allowed }}
+                            </h3>
+
+                            <p class="text-muted mb-0">
+                                Allowed Actions
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PENDING -->
+
+                <div class="col-md-4">
+
+                    <div class="card border-0 bg-warning-subtle rounded-4 h-100">
+
+                        <div class="card-body text-center">
+
+                            <h2>
+                                🟡
+                            </h2>
+
+                            <h3>
+                                {{ approvals }}
+                            </h3>
+
+                            <p class="text-muted mb-0">
+                                Human Approval Requests
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- BLOCKED -->
+
+                <div class="col-md-4">
+
+                    <div class="card border-0 bg-danger-subtle rounded-4 h-100">
+
+                        <div class="card-body text-center">
+
+                            <h2>
+                                🔴
+                            </h2>
+
+                            <h3>
+                                {{ blocked }}
+                            </h3>
+
+                            <p class="text-muted mb-0">
+                                Blocked Actions
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- APPROVED -->
+
+                <div class="col-md-4">
+
+                    <div class="card border-0 bg-success-subtle rounded-4 h-100">
+
+                        <div class="card-body text-center">
+
+                            <h2>
+                                ✅
+                            </h2>
+
+                            <h3>
+                                {{ approved }}
+                            </h3>
+
+                            <p class="text-muted mb-0">
+                                Human Approved
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- REJECTED -->
+
+                <div class="col-md-4">
+
+                    <div class="card border-0 bg-danger-subtle rounded-4 h-100">
+
+                        <div class="card-body text-center">
+
+                            <h2>
+                                ❌
+                            </h2>
+
+                            <h3>
+                                {{ rejected }}
+                            </h3>
+
+                            <p class="text-muted mb-0">
+                                Human Rejected
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- DECISION MODEL -->
+
+    <div class="card shadow border-0 rounded-4 mb-4">
+
+        <div class="card-body p-4">
+
+            <h4 class="mb-4">
+                GuardianAI Risk Decision Model
+            </h4>
+
+
+            <div class="row text-center">
+
+
+                <div class="col-md-4">
+
+                    <div class="p-4">
+
+                        <div style="font-size: 50px;">
+                            🟢
+                        </div>
+
+                        <h5>
+                            LOW RISK
+                        </h5>
+
+                        <p class="text-muted">
+                            Score: 0–39
+                        </p>
+
+                        <span class="badge bg-success">
+                            ALLOW
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-4">
+
+                    <div class="p-4">
+
+                        <div style="font-size: 50px;">
+                            🟡
+                        </div>
+
+                        <h5>
+                            MEDIUM RISK
+                        </h5>
+
+                        <p class="text-muted">
+                            Score: 40–79
+                        </p>
+
+                        <span class="badge bg-warning text-dark">
+                            HUMAN APPROVAL
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-4">
+
+                    <div class="p-4">
+
+                        <div style="font-size: 50px;">
+                            🔴
+                        </div>
+
+                        <h5>
+                            HIGH RISK
+                        </h5>
+
+                        <p class="text-muted">
+                            Score: 80–100
+                        </p>
+
+                        <span class="badge bg-danger">
+                            BLOCK
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- NAVIGATION -->
+
+    <div class="card shadow border-0 rounded-4">
+
+        <div class="card-body p-4">
+
+            <h4>
+                Quick Navigation
+            </h4>
+
+            <div class="d-flex flex-wrap gap-2 mt-3">
+
+                <a href="/risk"
+                   class="btn btn-primary">
+
+                    🔍 Risk Center
+
+                </a>
+
+                <a href="/approval"
+                   class="btn btn-warning">
+
+                    👤 Approval Center
+
+                </a>
+
+                <a href="/audit_logs"
+                   class="btn btn-dark">
+
+                    📜 Audit Logs
+
+                </a>
+
+                <a href="/agents"
+                   class="btn btn-secondary">
+
+                    🤖 AI Agents
+
+                </a>
+
+                <a href="/policies"
+                   class="btn btn-info">
+
+                    🛡️ Policies
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,36 @@
+body {
+    background-color: #f5f7fb;
+    font-family: Arial, sans-serif;
+}
+
+.card {
+    border-radius: 16px;
+}
+
+h2 {
+    font-weight: 700;
+}
+
+h4 {
+    font-weight: 600;
+}
+
+.table {
+    background-color: white;
+}
+
+.btn {
+    border-radius: 8px;
+}
+
+.badge {
+    padding: 8px 10px;
+}
+
+.alert {
+    border: none;
+}
+
+.container {
+    max-width: 1200px;
+}

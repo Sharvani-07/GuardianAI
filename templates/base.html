@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GuardianAI</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet"
+    href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+</head>
+
+<body>
+
+<div class="sidebar">
+
+    <h2>🛡️ GuardianAI</h2>
+
+    <a href="/">Dashboard</a>
+    <a href="/agents">AI Agents</a>
+    <a href="/risk">Risk Center</a>
+    <a href="/policy">Policies</a>
+    <a href="/approval">Approvals</a>
+    <a href="/audit">Audit Logs</a>
+<a href="/learning">🎓 Personalised Learning</a>
+</div>
+
+<div class="main-content">
+
+{% block content %}
+
+{% endblock %}
+
+</div>
+
+</body>
+</html>

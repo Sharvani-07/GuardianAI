@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>GuardianAI - Evaluation</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            padding: 40px;
+        }
+
+        .box {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .score {
+            font-size: 50px;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .feedback {
+            padding: 20px;
+            background: #eff6ff;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .answer {
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 10px;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 20px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="box">
+
+    <h1>Answer Evaluation</h1>
+
+    <div class="score">
+        {{ score }}%
+    </div>
+
+    <div class="feedback">
+        <h3>GuardianAI Feedback</h3>
+        <p>{{ feedback }}</p>
+    </div>
+
+    <div class="answer">
+
+        <h3>Expected Concept</h3>
+
+        <p>{{ correct_answer }}</p>
+
+    </div>
+
+    <a href="{{ url_for('learning.next_question') }}">
+        Next Question
+    </a>
+
+</div>
+
+</body>
+</html>

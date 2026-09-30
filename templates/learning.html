@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Learning Intelligence | GuardianAI</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: #f5f7fb;
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar {
+            background: #111827;
+        }
+
+        .navbar-brand {
+            color: white !important;
+            font-weight: bold;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #111827, #2563eb);
+            color: white;
+            padding: 40px 0;
+        }
+
+        .card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 5px 18px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .score-circle {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .topic-card {
+            padding: 18px;
+            border-radius: 12px;
+            background: #f8fafc;
+            margin-bottom: 12px;
+        }
+
+        .recommendation {
+            border-left: 5px solid #2563eb;
+            padding: 15px;
+            background: #eff6ff;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .governance-box {
+            background: #111827;
+            color: white;
+            border-radius: 16px;
+            padding: 25px;
+        }
+
+        .trace-step {
+            padding: 12px;
+            margin-bottom: 8px;
+            background: #1f2937;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg">
+    <div class="container">
+        <a class="navbar-brand" href="/dashboard">
+            🛡️ GuardianAI
+        </a>
+
+        <a href="/dashboard" class="btn btn-light btn-sm">
+            ← Dashboard
+        </a>
+    </div>
+</nav>
+
+
+<section class="hero">
+    <div class="container">
+
+        <h1 class="fw-bold">
+            🧠 GuardianAI Learning Intelligence
+        </h1>
+
+        <p class="mb-0">
+            Personalized learning powered by AI evaluation and risk governance.
+        </p>
+
+    </div>
+</section>
+
+
+<div class="container py-4">
+
+    <!-- STUDENT SELECTION -->
+
+    <div class="card p-4">
+
+        <h4 class="section-title">
+            👨‍🎓 Select Student
+        </h4>
+
+        <form method="GET" action="/learning">
+
+            <div class="row">
+
+                <div class="col-md-9">
+
+                    <select name="student_id" class="form-select" required>
+
+                        <option value="">
+                            Select a student
+                        </option>
+
+                        {% for student in students %}
+
+                        <option value="{{ student.id }}"
+                            {% if selected_student and student.id == selected_student.id %}
+                                selected
+                            {% endif %}>
+
+                            {{ student.name }}
+
+                            {% if student.email %}
+                                - {{ student.email }}
+                            {% endif %}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-3 mt-2 mt-md-0">
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        View Learning Profile
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    {% if selected_student %}
+
+    <!-- STUDENT PROFILE -->
+
+    <div class="card p-4">
+
+        <h3>
+            🎓 {{ selected_student.name }}
+        </h3>
+
+        {% if selected_student.email %}
+        <p class="text-muted mb-0">
+            {{ selected_student.email }}
+        </p>
+        {% endif %}
+
+    </div>
+
+
+    <!-- OVERALL PERFORMANCE -->
+
+    <div class="row">
+
+        <div class="col-md-4">
+
+            <div class="card p-4 text-center">
+
+                <h6 class="text-muted">
+                    Overall Performance
+                </h6>
+
+                <div class="score-circle text-primary">
+                    {{ overall_score|default(0)|round(1) }}%
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card p-4 text-center">
+
+                <h6 class="text-muted">
+                    Assessments
+                </h6>
+
+                <div class="score-circle text-success">
+                    {{ performance|length }}
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card p-4 text-center">
+
+                <h6 class="text-muted">
+                    Learning Status
+                </h6>
+
+                {% if overall_score|float >= 80 %}
+
+                    <div class="score-circle text-success">
+                        Strong
+                    </div>
+
+                {% elif overall_score|float >= 60 %}
+
+                    <div class="score-circle text-warning">
+                        Needs Practice
+                    </div>
+
+                {% else %}
+
+                    <div class="score-circle text-danger">
+                        Priority Learning
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- MULTI-MODAL ASSESSMENT -->
+
+    <div class="card p-4">
+
+        <h4 class="section-title">
+            🎯 Multi-Modal Assessment
+        </h4>
+
+        <p class="text-muted">
+            Evaluate student knowledge using different response formats.
+        </p>
+
+        <div class="row g-3">
+
+            <div class="col-md-3">
+
+                <a href="/learning/questions?student_id={{ selected_student.id }}"
+                   class="btn btn-primary w-100">
+
+                    📝 Adaptive Quiz
+
+                </a>
+
+            </div>
+
+            <div class="col-md-3">
+
+                <a href="/voice"
+                   class="btn btn-success w-100">
+
+                    🎤 Voice Assessment
+
+                </a>
+
+            </div>
+
+            <div class="col-md-3">
+
+                <a href="/handwritten"
+                   class="btn btn-warning w-100">
+
+                    ✍️ Written Assessment
+
+                </a>
+
+            </div>
+
+            <div class="col-md-3">
+
+                <a href="/document_evaluation"
+                   class="btn btn-info w-100">
+
+                    📄 Assignment Evaluation
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    
+
+    <!-- KNOWLEDGE MAP -->
+
+<div class="card p-4">
+
+    <h4 class="section-title">
+        🧠 Knowledge Map
+    </h4>
+
+    <p class="text-muted">
+        GuardianAI tracks the student's performance across different topics.
+    </p>
+
+    {% if topic_analysis %}
+
+        {% for item in topic_analysis %}
+
+            <div class="topic-card">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <strong>
+                        {{ item.topic }}
+                    </strong>
+
+                    <strong>
+                        {{ item.average_score|default(item.score)|default(0)|float|round(1) }}%
+                    </strong>
+
+                </div>
+
+                {% set topic_score = item.average_score|default(item.score)|default(0)|float %}
+
+                <div class="progress mt-2">
+
+                    <div
+                        class="progress-bar"
+                        role="progressbar"
+                        style="width: {{ topic_score }}%;"
+                        aria-valuenow="{{ topic_score }}"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                    >
+                        {{ topic_score|round(1) }}%
+                    </div>
+
+                </div>
+
+                <div class="mt-2">
+
+                    {% if topic_score >= 80 %}
+
+                        <span class="badge bg-success">
+                            Strong
+                        </span>
+
+                    {% elif topic_score >= 60 %}
+
+                        <span class="badge bg-warning text-dark">
+                            Needs Practice
+                        </span>
+
+                    {% else %}
+
+                        <span class="badge bg-danger">
+                            Priority Learning
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="alert alert-info">
+            No topic performance data available yet.
+            Complete an assessment to build your Knowledge Map.
+        </div>
+
+    {% endif %}
+
+</div>
+    <!-- KNOWLEDGE GAP -->
+
+    <div class="card p-4">
+
+        <h4 class="section-title">
+            🔎 Knowledge Gap Detection
+        </h4>
+
+        {% if recommendations %}
+
+            {% for rec in recommendations %}
+
+            <div class="recommendation">
+
+                <strong>
+                    🎯 {{ rec.topic }}
+                </strong>
+
+                <p class="mb-0 mt-1">
+                    {{ rec.message }}
+                </p>
+
+            </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="alert alert-success">
+                No major learning gaps detected.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- PERSONALIZED DECISION -->
+
+    <div class="card p-4">
+
+        <h4 class="section-title">
+            🎯 Personalized Learning Decision
+        </h4>
+
+        {% if recommendations %}
+
+            <div class="alert alert-primary">
+
+                GuardianAI recommends focusing on:
+
+                <strong>
+                    {{ recommendations[0].topic }}
+                </strong>
+
+                <br><br>
+
+                The system can generate adaptive questions based on
+                the student's current performance.
+
+            </div>
+
+        {% else %}
+
+            <div class="alert alert-success">
+
+                Current performance does not indicate a major learning gap.
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- WHY RECOMMENDATION -->
+
+    <div class="card p-4">
+
+        <h4 class="section-title">
+            🤖 Why This Recommendation?
+        </h4>
+
+        <p>
+            GuardianAI analyzes the student's assessment history,
+            identifies weaker topics, and converts those results into
+            personalized learning recommendations.
+        </p>
+
+        {% if recommendations %}
+
+        <div class="alert alert-info">
+
+            <strong>
+                Current learning focus:
+            </strong>
+
+            {{ recommendations[0].topic }}
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- PS3 GOVERNANCE -->
+
+    <div class="card p-4">
+
+        <div class="governance-box">
+
+            <h4 class="mb-4">
+                🛡️ PS3 AI Governance Layer
+            </h4>
+
+            <div class="row text-center">
+
+                <div class="col-md-3">
+
+                    <div class="trace-step">
+                        🤖<br>
+                        AI Evaluation Request
+                    </div>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <div class="trace-step">
+                        🛡️<br>
+                        Risk Analysis
+                    </div>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <div class="trace-step">
+                        🔐<br>
+                        Permission Decision
+                    </div>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <div class="trace-step">
+                        📊<br>
+                        Learning Action
+                    </div>
+
+                </div>
+
+            </div>
+
+            <hr>
+
+            <div class="row text-center">
+
+                <div class="col-md-4">
+                    <strong>LOW</strong>
+                    <br>
+                    ✓ ALLOW
+                </div>
+
+                <div class="col-md-4">
+                    <strong>MEDIUM</strong>
+                    <br>
+                    ⚠ HUMAN APPROVAL
+                </div>
+
+                <div class="col-md-4">
+                    <strong>HIGH</strong>
+                    <br>
+                    ✕ BLOCK
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- DECISION TRACE -->
+
+    <div class="card p-4">
+
+        <h4 class="section-title">
+            🔍 Decision Trace
+        </h4>
+
+        <div class="trace-step">
+            1️⃣ Student submitted an assessment
+        </div>
+
+        <div class="trace-step">
+            2️⃣ AI evaluation action requested
+        </div>
+
+        <div class="trace-step">
+            3️⃣ GuardianAI risk engine checked the action
+        </div>
+
+        <div class="trace-step">
+            4️⃣ Evaluation result generated
+        </div>
+
+        <div class="trace-step">
+            5️⃣ Student performance profile updated
+        </div>
+
+        <div class="trace-step">
+            6️⃣ Learning gap identified
+        </div>
+
+        <div class="trace-step">
+            7️⃣ Personalized learning action generated
+        </div>
+
+    </div>
+
+
+    <!-- CONTINUE LEARNING -->
+
+    <div class="card p-4">
+
+        <h4 class="section-title">
+            🚀 Continue Learning
+        </h4>
+
+        <div class="row g-3">
+
+            <div class="col-md-4">
+
+                <a href="/learning/questions?student_id={{ selected_student.id }}"
+                   class="btn btn-primary w-100">
+
+                    📝 Adaptive Quiz
+
+                </a>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <a href="/learning/progress?student_id={{ selected_student.id }}"
+                   class="btn btn-success w-100">
+
+                    📈 Detailed Progress
+
+                </a>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <a href="/agents"
+                   class="btn btn-dark w-100">
+
+                    🛡️ Governance Center
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {% else %}
+
+    <div class="card p-5 text-center">
+
+        <h3>
+            👋 Welcome to GuardianAI Learning Intelligence
+        </h3>
+
+        <p class="text-muted mt-3">
+            Select a student above to view their personalized
+            learning profile, knowledge map, recommendations,
+            and assessment history.
+        </p>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

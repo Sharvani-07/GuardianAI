@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>GuardianAI - Document Evaluation</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <style>
+
+        body {
+            background: #f4f7fb;
+            font-family: Arial, sans-serif;
+        }
+
+        .container-box {
+            max-width: 950px;
+            margin: 40px auto;
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #1f3c88;
+            color: white;
+            padding: 28px;
+        }
+
+        .header h2 {
+            margin: 0;
+            font-weight: bold;
+        }
+
+        .form-label {
+            font-weight: 600;
+        }
+
+        .result-box {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .score {
+            font-size: 48px;
+            font-weight: bold;
+            color: #1f3c88;
+        }
+
+        .score-label {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .concept-box {
+            background: #f8f9fa;
+            padding: 18px;
+            border-radius: 10px;
+            margin-top: 12px;
+        }
+
+        .matched {
+            color: #198754;
+            font-weight: 700;
+        }
+
+        .missing {
+            color: #dc3545;
+            font-weight: 700;
+        }
+
+        .learning-card {
+            background: linear-gradient(
+                135deg,
+                #eef4ff,
+                #f8fbff
+            );
+
+            border: 1px solid #d8e5ff;
+            border-radius: 14px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .learning-title {
+            color: #1f3c88;
+            font-weight: bold;
+        }
+
+        .learning-stat {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            height: 100%;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .learning-stat h4 {
+            margin: 0;
+            color: #1f3c88;
+            font-weight: bold;
+        }
+
+        .learning-stat small {
+            color: #6c757d;
+        }
+
+        .level-badge {
+            display: inline-block;
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-weight: bold;
+            background: #e7f1ff;
+            color: #1f3c88;
+        }
+
+        .gap-item {
+            background: white;
+            border-left: 4px solid #dc3545;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-top: 8px;
+        }
+
+        .gap-concept {
+            font-weight: bold;
+            color: #dc3545;
+        }
+
+        .metric-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            height: 100%;
+        }
+
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1f3c88;
+        }
+
+        .metric-name {
+            font-size: 13px;
+            color: #6c757d;
+        }
+
+        #loading {
+            display: none;
+        }
+
+        #errorMessage {
+            display: none;
+        }
+
+        #extractedSection {
+            display: none;
+        }
+
+        #learningSection {
+            display: none;
+        }
+
+        #learningGapsSection {
+            display: none;
+        }
+
+        .extracted-text {
+            white-space: pre-wrap;
+            line-height: 1.7;
+            max-height: 350px;
+            overflow-y: auto;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="container-box">
+
+    <div class="card">
+
+        <!-- ================================================= -->
+        <!-- HEADER -->
+        <!-- ================================================= -->
+
+        <div class="header">
+
+            <h2>
+                📄 GuardianAI Document Evaluation
+            </h2>
+
+            <p class="mb-0 mt-2">
+
+                Upload a student assignment and GuardianAI
+                will evaluate the answer, identify knowledge
+                gaps and generate personalized learning
+                recommendations.
+
+            </p>
+
+        </div>
+
+
+        <div class="p-4">
+
+            <!-- ================================================= -->
+            <!-- STUDENT NAME -->
+            <!-- ================================================= -->
+
+            <div class="mb-3">
+
+                <label class="form-label">
+                    Student Name
+                </label>
+
+                <input
+                    type="text"
+                    id="studentName"
+                    class="form-control"
+                    placeholder="Enter student name"
+                >
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- QUESTION -->
+            <!-- ================================================= -->
+
+            <div class="mb-3">
+
+                <label class="form-label">
+                    Assignment Question
+                </label>
+
+                <textarea
+                    id="question"
+                    class="form-control"
+                    rows="3"
+                    placeholder="Enter the question given to the student"
+                ></textarea>
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- EXPECTED ANSWER -->
+            <!-- ================================================= -->
+
+            <div class="mb-3">
+
+                <label class="form-label">
+                    Expected / Reference Answer
+                </label>
+
+                <textarea
+                    id="expectedAnswer"
+                    class="form-control"
+                    rows="6"
+                    placeholder="Enter the expected/reference answer"
+                ></textarea>
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- KEYWORDS -->
+            <!-- ================================================= -->
+
+            <div class="mb-3">
+
+                <label class="form-label">
+                    Important Concepts / Keywords
+                </label>
+
+                <input
+                    type="text"
+                    id="keywords"
+                    class="form-control"
+                    placeholder="Example: inheritance, parent class, child class, code reusability"
+                >
+
+                <small class="text-muted">
+
+                    Separate multiple concepts using commas.
+
+                </small>
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- FILE -->
+            <!-- ================================================= -->
+
+            <div class="mb-4">
+
+                <label class="form-label">
+                    Upload Student Assignment
+                </label>
+
+                <input
+                    type="file"
+                    id="assignmentFile"
+                    class="form-control"
+                    accept=".pdf,.docx,.txt"
+                >
+
+                <small class="text-muted">
+
+                    Supported formats: PDF, DOCX, TXT
+
+                </small>
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- ERROR -->
+            <!-- ================================================= -->
+
+            <div
+                id="errorMessage"
+                class="alert alert-danger"
+            ></div>
+
+
+            <!-- ================================================= -->
+            <!-- LOADING -->
+            <!-- ================================================= -->
+
+            <div
+                id="loading"
+                class="alert alert-info"
+            >
+
+                ⏳ GuardianAI is evaluating the assignment...
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- BUTTON -->
+            <!-- ================================================= -->
+
+            <button
+                type="button"
+                class="btn btn-primary w-100 py-2"
+                onclick="evaluateAssignment()"
+            >
+
+                🔍 Evaluate Assignment
+
+            </button>
+
+
+            <!-- ================================================= -->
+            <!-- EXTRACTED ANSWER -->
+            <!-- ================================================= -->
+
+            <div
+                id="extractedSection"
+                class="mt-4"
+            >
+
+                <h5>
+                    📝 Extracted Student Answer
+                </h5>
+
+                <div
+                    id="extractedText"
+                    class="concept-box extracted-text"
+                ></div>
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- RESULT -->
+            <!-- ================================================= -->
+
+            <div
+                id="resultBox"
+                class="result-box"
+            >
+
+                <hr class="my-4">
+
+
+                <h4 class="mb-4">
+
+                    📊 Evaluation Result
+
+                </h4>
+
+
+                <!-- ================================================= -->
+                <!-- SCORE -->
+                <!-- ================================================= -->
+
+                <div class="text-center mb-4">
+
+                    <div
+                        class="score"
+                        id="score"
+                    >
+                        0 / 10
+                    </div>
+
+                    <div class="score-label">
+
+                        Overall Assignment Score
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- METRICS -->
+                <!-- ================================================= -->
+
+                <div class="row g-3 mb-4">
+
+                    <div class="col-md-4">
+
+                        <div class="metric-box">
+
+                            <div
+                                class="metric-value"
+                                id="similarity"
+                            >
+                                0%
+                            </div>
+
+                            <div class="metric-name">
+                                Answer Similarity
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <div class="metric-box">
+
+                            <div
+                                class="metric-value"
+                                id="conceptCoverage"
+                            >
+                                0%
+                            </div>
+
+                            <div class="metric-name">
+                                Concept Coverage
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <div class="metric-box">
+
+                            <div
+                                class="metric-value"
+                                id="answerLength"
+                            >
+                                0%
+                            </div>
+
+                            <div class="metric-name">
+                                Answer Quality
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- COVERAGE -->
+                <!-- ================================================= -->
+
+                <div class="mb-4">
+
+                    <h6>
+                        Concept Coverage
+                    </h6>
+
+                    <div class="progress">
+
+                        <div
+                            id="coverageBar"
+                            class="progress-bar"
+                            role="progressbar"
+                            style="width: 0%"
+                        >
+                            0%
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- MATCHED CONCEPTS -->
+                <!-- ================================================= -->
+
+                <div class="concept-box">
+
+                    <h6 class="matched">
+
+                        ✓ Matched Concepts
+
+                    </h6>
+
+                    <p
+                        id="matchedConcepts"
+                        class="mb-0"
+                    >
+
+                        None
+
+                    </p>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- MISSING CONCEPTS -->
+                <!-- ================================================= -->
+
+                <div class="concept-box">
+
+                    <h6 class="missing">
+
+                        ✗ Missing Concepts
+
+                    </h6>
+
+                    <p
+                        id="missingConcepts"
+                        class="mb-0"
+                    >
+
+                        None
+
+                    </p>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- FEEDBACK -->
+                <!-- ================================================= -->
+
+                <div class="alert alert-info mt-3">
+
+                    <h6>
+
+                        🤖 GuardianAI Feedback
+
+                    </h6>
+
+                    <p
+                        id="feedback"
+                        class="mb-0"
+                    ></p>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- RECOMMENDATION -->
+                <!-- ================================================= -->
+
+                <div class="alert alert-success">
+
+                    <h6>
+
+                        🎯 Personalized Learning Recommendation
+
+                    </h6>
+
+                    <p
+                        id="recommendation"
+                        class="mb-0"
+                    ></p>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- PERSONALIZED LEARNING -->
+                <!-- ================================================= -->
+
+                <div
+                    id="learningSection"
+                    class="learning-card"
+                >
+
+                    <h5 class="learning-title mb-3">
+
+                        🧠 Personalized Learning Analysis
+
+                    </h5>
+
+
+                    <p class="text-muted">
+
+                        GuardianAI has saved this assessment to
+                        the student's learning profile.
+
+                    </p>
+
+
+                    <div class="row g-3">
+
+                        <!-- TOPIC -->
+
+                        <div class="col-md-4">
+
+                            <div class="learning-stat">
+
+                                <small>
+                                    Learning Topic
+                                </small>
+
+                                <h4
+                                    id="learningTopic"
+                                    class="mt-2"
+                                >
+                                    -
+                                </h4>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- SCORE -->
+
+                        <div class="col-md-4">
+
+                            <div class="learning-stat">
+
+                                <small>
+                                    Learning Score
+                                </small>
+
+                                <h4
+                                    id="learningScore"
+                                    class="mt-2"
+                                >
+                                    0%
+                                </h4>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- LEVEL -->
+
+                        <div class="col-md-4">
+
+                            <div class="learning-stat">
+
+                                <small>
+                                    Learning Level
+                                </small>
+
+                                <div class="mt-2">
+
+                                    <span
+                                        id="learningLevel"
+                                        class="level-badge"
+                                    >
+                                        -
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- AVERAGE -->
+
+                    <div class="mt-4">
+
+                        <h6>
+                            📈 Topic Performance
+                        </h6>
+
+                        <div class="progress">
+
+                            <div
+                                id="learningAverageBar"
+                                class="progress-bar bg-success"
+                                style="width: 0%"
+                            >
+                                0%
+                            </div>
+
+                        </div>
+
+                        <small
+                            id="learningAverageText"
+                            class="text-muted"
+                        >
+                            Average performance: 0%
+
+                        </small>
+
+                    </div>
+
+
+                    <!-- RECOMMENDATION -->
+
+                    <div class="alert alert-primary mt-4 mb-0">
+
+                        <strong>
+                            🎯 Learning Recommendation
+                        </strong>
+
+                        <p
+                            id="learningRecommendation"
+                            class="mb-0 mt-2"
+                        ></p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- LEARNING GAPS -->
+                <!-- ================================================= -->
+
+                <div
+                    id="learningGapsSection"
+                    class="mt-4"
+                >
+
+                    <h5>
+                        📚 Knowledge Gaps
+                    </h5>
+
+                    <p class="text-muted">
+
+                        These concepts require additional
+                        learning or practice.
+
+                    </p>
+
+                    <div id="learningGaps"></div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+
+// ============================================================
+// EVALUATE ASSIGNMENT
+// ============================================================
+
+async function evaluateAssignment() {
+
+    const studentName =
+        document.getElementById("studentName")
+        .value
+        .trim();
+
+    const question =
+        document.getElementById("question")
+        .value
+        .trim();
+
+    const expectedAnswer =
+        document.getElementById("expectedAnswer")
+        .value
+        .trim();
+
+    const keywords =
+        document.getElementById("keywords")
+        .value
+        .trim();
+
+    const file =
+        document.getElementById("assignmentFile")
+        .files[0];
+
+
+    const errorBox =
+        document.getElementById("errorMessage");
+
+    const loading =
+        document.getElementById("loading");
+
+
+    // Hide old messages
+
+    errorBox.style.display = "none";
+
+    document.getElementById(
+        "resultBox"
+    ).style.display = "none";
+
+    document.getElementById(
+        "extractedSection"
+    ).style.display = "none";
+
+    document.getElementById(
+        "learningSection"
+    ).style.display = "none";
+
+    document.getElementById(
+        "learningGapsSection"
+    ).style.display = "none";
+
+
+    // ========================================================
+    // VALIDATION
+    // ========================================================
+
+    if (!studentName) {
+
+        showError(
+            "Please enter the student name."
+        );
+
+        return;
+    }
+
+
+    if (!question) {
+
+        showError(
+            "Please enter the assignment question."
+        );
+
+        return;
+    }
+
+
+    if (!expectedAnswer) {
+
+        showError(
+            "Please enter the expected/reference answer."
+        );
+
+        return;
+    }
+
+
+    if (!file) {
+
+        showError(
+            "Please upload a PDF, DOCX or TXT file."
+        );
+
+        return;
+    }
+
+
+    const allowedExtensions = [
+        ".pdf",
+        ".docx",
+        ".txt"
+    ];
+
+
+    const fileName =
+        file.name.toLowerCase();
+
+
+    if (
+        !allowedExtensions.some(
+            ext => fileName.endsWith(ext)
+        )
+    ) {
+
+        showError(
+            "Please upload only PDF, DOCX or TXT files."
+        );
+
+        return;
+    }
+
+
+    // ========================================================
+    // FORM DATA
+    // ========================================================
+
+    const formData =
+        new FormData();
+
+
+    formData.append(
+        "student_name",
+        studentName
+    );
+
+
+    formData.append(
+        "question",
+        question
+    );
+
+
+    formData.append(
+        "expected_answer",
+        expectedAnswer
+    );
+
+
+    formData.append(
+        "keywords",
+        keywords
+    );
+
+
+    formData.append(
+        "assignment_file",
+        file
+    );
+
+
+    // Show loading
+
+    loading.style.display = "block";
+
+
+    // ========================================================
+    // SEND TO FLASK
+    // ========================================================
+
+    try {
+
+        const response =
+            await fetch(
+                "/document_evaluation",
+                {
+                    method: "POST",
+                    body: formData
+                }
+            );
+
+
+        const responseText =
+            await response.text();
+
+
+        console.log(
+            "HTTP Status:",
+            response.status
+        );
+
+
+        console.log(
+            "Server Response:",
+            responseText
+        );
+
+
+        let data;
+
+
+        try {
+
+            data =
+                JSON.parse(
+                    responseText
+                );
+
+        } catch (parseError) {
+
+            showError(
+                "The server returned an invalid response. " +
+                "Check the VS Code terminal for the error."
+            );
+
+            return;
+        }
+
+
+        // ====================================================
+        // SERVER ERROR
+        // ====================================================
+
+        if (
+            !response.ok ||
+            data.success === false ||
+            data.error
+        ) {
+
+            showError(
+                data.error ||
+                "Evaluation failed."
+            );
+
+            return;
+        }
+
+
+        // ====================================================
+        // CHECK RESULT
+        // ====================================================
+
+        if (!data.result) {
+
+            showError(
+                "No evaluation result was returned."
+            );
+
+            return;
+        }
+
+
+        const result =
+            data.result;
+
+
+        // ====================================================
+        // EXTRACTED TEXT
+        // ====================================================
+
+        document.getElementById(
+            "extractedText"
+        ).textContent =
+            data.extracted_text ||
+            result.extracted_text ||
+            "No text extracted.";
+
+
+        document.getElementById(
+            "extractedSection"
+        ).style.display = "block";
+
+
+        // ====================================================
+        // SCORE
+        // ====================================================
+
+        const score =
+            Number(
+                result.score ?? 0
+            );
+
+
+        document.getElementById(
+            "score"
+        ).textContent =
+            score.toFixed(2) + " / 10";
+
+
+        // ====================================================
+        // SIMILARITY
+        // ====================================================
+
+        const similarity =
+            Number(
+                result.similarity ?? 0
+            );
+
+
+        document.getElementById(
+            "similarity"
+        ).textContent =
+            similarity.toFixed(2) + "%";
+
+
+        // ====================================================
+        // CONCEPT COVERAGE
+        // ====================================================
+
+        const coverage =
+            Number(
+                result.coverage ??
+                result.concept_coverage ??
+                0
+            );
+
+
+        document.getElementById(
+            "conceptCoverage"
+        ).textContent =
+            coverage.toFixed(2) + "%";
+
+
+        document.getElementById(
+            "coverageBar"
+        ).style.width =
+            Math.max(
+                0,
+                Math.min(
+                    100,
+                    coverage
+                )
+            ) + "%";
+
+
+        document.getElementById(
+            "coverageBar"
+        ).textContent =
+            coverage.toFixed(2) + "%";
+
+
+        // ====================================================
+        // ANSWER LENGTH
+        // ====================================================
+
+        const answerLength =
+            Number(
+                result.answer_length ?? 0
+            );
+
+
+        document.getElementById(
+            "answerLength"
+        ).textContent =
+            answerLength.toFixed(2) + "%";
+
+
+        // ====================================================
+        // MATCHED CONCEPTS
+        // ====================================================
+
+        const matched =
+            result.matched_keywords ||
+            result.matched_concepts ||
+            [];
+
+
+        document.getElementById(
+            "matchedConcepts"
+        ).textContent =
+            matched.length
+                ? matched.join(", ")
+                : "No important concepts matched.";
+
+
+        // ====================================================
+        // MISSING CONCEPTS
+        // ====================================================
+
+        const missing =
+            result.missing_keywords ||
+            result.missing_concepts ||
+            [];
+
+
+        document.getElementById(
+            "missingConcepts"
+        ).textContent =
+            missing.length
+                ? missing.join(", ")
+                : "No major concepts are missing.";
+
+
+        // ====================================================
+        // FEEDBACK
+        // ====================================================
+
+        document.getElementById(
+            "feedback"
+        ).textContent =
+            result.feedback ||
+            "No feedback available.";
+
+
+        // ====================================================
+        // RECOMMENDATION
+        // ====================================================
+
+        document.getElementById(
+            "recommendation"
+        ).textContent =
+            result.recommendation ||
+            "Continue practicing the topic.";
+
+
+        // ====================================================
+        // PERSONALIZED LEARNING
+        // ====================================================
+
+        const learning =
+            data.learning;
+
+
+        if (learning) {
+
+            document.getElementById(
+                "learningTopic"
+            ).textContent =
+                learning.topic ||
+                "General Assessment";
+
+
+            document.getElementById(
+                "learningScore"
+            ).textContent =
+                Number(
+                    learning.score ?? 0
+                ).toFixed(2) + "%";
+
+
+            document.getElementById(
+                "learningLevel"
+            ).textContent =
+                learning.level ||
+                "Not Available";
+
+
+            const average =
+                Number(
+                    learning.average_score ?? 0
+                );
+
+
+            document.getElementById(
+                "learningAverageBar"
+            ).style.width =
+                Math.max(
+                    0,
+                    Math.min(
+                        100,
+                        average
+                    )
+                ) + "%";
+
+
+            document.getElementById(
+                "learningAverageBar"
+            ).textContent =
+                average.toFixed(2) + "%";
+
+
+            document.getElementById(
+                "learningAverageText"
+            ).textContent =
+                "Average performance: " +
+                average.toFixed(2) +
+                "%";
+
+
+            document.getElementById(
+                "learningRecommendation"
+            ).textContent =
+                learning.recommendation ||
+                "Continue practicing this topic.";
+
+
+            document.getElementById(
+                "learningSection"
+            ).style.display =
+                "block";
+
+        }
+
+
+        // ====================================================
+        // LEARNING GAPS
+        // ====================================================
+
+        const gaps =
+            result.learning_gaps || [];
+
+
+        const gapsContainer =
+            document.getElementById(
+                "learningGaps"
+            );
+
+
+        gapsContainer.innerHTML = "";
+
+
+        if (gaps.length > 0) {
+
+            gaps.forEach(
+                function(gap) {
+
+                    const div =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    div.className =
+                        "gap-item";
+
+
+                    const concept =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    concept.className =
+                        "gap-concept";
+
+
+                    concept.textContent =
+                        "📌 " +
+                        (
+                            gap.concept ||
+                            "Unknown Concept"
+                        );
+
+
+                    const recommendation =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    recommendation.className =
+                        "text-muted mt-1";
+
+
+                    recommendation.textContent =
+                        gap.recommendation ||
+                        "Revise this concept and practice related questions.";
+
+
+                    div.appendChild(
+                        concept
+                    );
+
+
+                    div.appendChild(
+                        recommendation
+                    );
+
+
+                    gapsContainer.appendChild(
+                        div
+                    );
+
+                }
+            );
+
+
+            document.getElementById(
+                "learningGapsSection"
+            ).style.display =
+                "block";
+
+        }
+
+
+        // ====================================================
+        // SHOW RESULT
+        // ====================================================
+
+        document.getElementById(
+            "resultBox"
+        ).style.display =
+            "block";
+
+
+        // Scroll to result
+
+        document.getElementById(
+            "resultBox"
+        ).scrollIntoView({
+            behavior: "smooth"
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Document evaluation failed:",
+            error
+        );
+
+
+        showError(
+            "Request failed: " +
+            error.message +
+            ". Check the VS Code terminal."
+        );
+
+    } finally {
+
+        loading.style.display =
+            "none";
+
+    }
+
+}
+
+
+// ============================================================
+// ERROR FUNCTION
+// ============================================================
+
+function showError(message) {
+
+    const errorBox =
+        document.getElementById(
+            "errorMessage"
+        );
+
+
+    errorBox.textContent =
+        message;
+
+
+    errorBox.style.display =
+        "block";
+
+
+    errorBox.scrollIntoView({
+        behavior: "smooth"
+    });
+
+}
+
+</script>
+
+
+</body>
+
+</html>

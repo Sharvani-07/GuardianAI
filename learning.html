@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GuardianAI - Learning</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        h1 {
+            color: #1f2937;
+        }
+
+        .subtitle {
+            color: #64748b;
+            margin-bottom: 30px;
+        }
+
+        .subjects {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .card h2 {
+            margin-top: 0;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #2563eb;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>GuardianAI Learning Center</h1>
+
+    <p class="subtitle">
+        Choose a subject and test your knowledge with AI-assisted learning.
+    </p>
+
+    <div class="subjects">
+
+        {% for subject in subjects %}
+
+        <div class="card">
+
+            <h2>{{ subject }}</h2>
+
+            <p>
+                Practice important {{ subject }} concepts
+                and receive instant feedback.
+            </p>
+
+            <form action="{{ url_for('learning.start_learning') }}" method="POST">
+
+                <input type="hidden"
+                       name="subject"
+                       value="{{ subject }}">
+
+                <button type="submit">
+                    Start Learning
+                </button>
+
+            </form>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+</body>
+</html>

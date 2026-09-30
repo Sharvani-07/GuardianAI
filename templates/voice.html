@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Voice Answer Evaluation | GuardianAI</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    >
+
+    <style>
+
+        body {
+            background: #f4f7fb;
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar {
+            background: linear-gradient(
+                135deg,
+                #172554,
+                #1d4ed8
+            );
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.4rem;
+        }
+
+        .main-container {
+            max-width: 1000px;
+            margin: auto;
+            padding: 35px 20px 60px;
+        }
+
+        .page-title {
+            color: #172554;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            color: #64748b;
+        }
+
+        .main-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow:
+                0 5px 25px rgba(0,0,0,0.08);
+        }
+
+        .section-title {
+            color: #172554;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 10px;
+            padding: 12px;
+        }
+
+        .record-box {
+            background: #eff6ff;
+            border: 2px dashed #60a5fa;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .mic-icon {
+            font-size: 50px;
+            color: #2563eb;
+            margin-bottom: 15px;
+        }
+
+        .record-btn {
+            border-radius: 50px;
+            padding: 12px 25px;
+            font-weight: bold;
+        }
+
+        .recording {
+            background: #dc2626 !important;
+            border-color: #dc2626 !important;
+        }
+
+        .recognized-box {
+            margin-top: 20px;
+            background: #f8fafc;
+            border-radius: 14px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .result-card {
+            display: none;
+            margin-top: 25px;
+            padding: 25px;
+            border-radius: 18px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+        }
+
+        .score-circle {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            background: #dbeafe;
+            color: #1d4ed8;
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .learning-box {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 14px;
+            background: #eff6ff;
+            border-left: 5px solid #2563eb;
+        }
+
+        .btn-evaluate {
+            padding: 13px 30px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 7px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .loading {
+            display: none;
+        }
+
+        .error-box {
+            display: none;
+            margin-top: 20px;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- ===================================================== -->
+<!-- NAVBAR -->
+<!-- ===================================================== -->
+
+<nav class="navbar navbar-dark">
+
+    <div class="container-fluid px-4">
+
+        <a class="navbar-brand" href="/">
+            <i class="bi bi-shield-check"></i>
+            GuardianAI
+        </a>
+
+        <a
+            href="/learning"
+            class="btn btn-light btn-sm"
+        >
+            <i class="bi bi-arrow-left"></i>
+            Learning
+        </a>
+
+    </div>
+
+</nav>
+
+
+<!-- ===================================================== -->
+<!-- MAIN -->
+<!-- ===================================================== -->
+
+<div class="main-container">
+
+
+    <h1 class="page-title">
+
+        🎤 Voice Answer Evaluation
+
+    </h1>
+
+    <p class="subtitle">
+
+        Evaluate spoken answers and automatically update
+        personalised learning performance.
+
+    </p>
+
+
+    <!-- ================================================= -->
+    <!-- MAIN CARD -->
+    <!-- ================================================= -->
+
+    <div class="main-card">
+
+
+        <h3 class="section-title">
+
+            👨‍🎓 Student & Question Details
+
+        </h3>
+
+
+        <!-- ================================================= -->
+        <!-- FORM -->
+        <!-- ================================================= -->
+
+        <form id="voiceForm">
+
+
+            <!-- STUDENT NAME -->
+
+            <div class="mb-3">
+
+                <label
+                    class="form-label"
+                    for="student_name"
+                >
+                    Student Name
+                </label>
+
+                <input
+                    type="text"
+                    id="student_name"
+                    name="student_name"
+                    class="form-control"
+                    placeholder="Enter student name"
+                    required
+                >
+
+            </div>
+
+
+            <!-- QUESTION -->
+
+            <div class="mb-3">
+
+                <label
+                    class="form-label"
+                    for="question"
+                >
+                    Question / Topic
+                </label>
+
+                <input
+                    type="text"
+                    id="question"
+                    name="question"
+                    class="form-control"
+                    placeholder="Example: inheritance"
+                    required
+                >
+
+            </div>
+
+
+            <!-- EXPECTED ANSWER -->
+
+            <div class="mb-3">
+
+                <label
+                    class="form-label"
+                    for="expected_answer"
+                >
+                    Expected Answer
+                </label>
+
+                <textarea
+                    id="expected_answer"
+                    name="expected_answer"
+                    class="form-control"
+                    rows="4"
+                    placeholder="Enter the expected/correct answer..."
+                    required
+                ></textarea>
+
+            </div>
+
+
+            <!-- KEYWORDS -->
+
+            <div class="mb-3">
+
+                <label
+                    class="form-label"
+                    for="keywords"
+                >
+                    Important Keywords
+                </label>
+
+                <input
+                    type="text"
+                    id="keywords"
+                    name="keywords"
+                    class="form-control"
+                    placeholder="Example: class, properties, methods, inheritance"
+                >
+
+                <small class="text-muted">
+
+                    Separate keywords using commas.
+
+                </small>
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- VOICE RECORDING -->
+            <!-- ================================================= -->
+
+            <div class="record-box">
+
+                <div class="mic-icon">
+
+                    <i class="bi bi-mic-fill"></i>
+
+                </div>
+
+
+                <h4>
+
+                    Record Your Answer
+
+                </h4>
+
+
+                <p class="text-muted">
+
+                    Click the button and speak your answer.
+
+                </p>
+
+
+                <button
+                    type="button"
+                    id="recordButton"
+                    class="btn btn-primary record-btn"
+                >
+
+                    <i class="bi bi-mic-fill"></i>
+
+                    Start Recording
+
+                </button>
+
+
+                <p
+                    id="recordingStatus"
+                    class="mt-3 mb-0 text-muted"
+                >
+                    Not recording
+                </p>
+
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- RECOGNIZED ANSWER -->
+            <!-- ================================================= -->
+
+            <div class="recognized-box">
+
+                <label
+                    class="form-label"
+                    for="recognized_answer"
+                >
+
+                    📝 Recognised Answer
+
+                </label>
+
+
+                <textarea
+                    id="recognized_answer"
+                    name="recognized_answer"
+                    class="form-control"
+                    rows="5"
+                    placeholder="Your spoken answer will appear here..."
+                    required
+                ></textarea>
+
+
+                <small class="text-muted">
+
+                    You can edit the recognised text before
+                    evaluating it.
+
+                </small>
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- EVALUATE BUTTON -->
+            <!-- ================================================= -->
+
+            <div class="text-center mt-4">
+
+                <button
+                    type="submit"
+                    class="btn btn-success btn-evaluate"
+                >
+
+                    <i class="bi bi-check-circle"></i>
+
+                    Evaluate Answer
+
+                </button>
+
+
+                <div
+                    id="loading"
+                    class="loading mt-3"
+                >
+
+                    <div
+                        class="spinner-border text-primary"
+                        role="status"
+                    ></div>
+
+                    <p class="mt-2 text-muted">
+
+                        GuardianAI is evaluating the answer...
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+        </form>
+
+
+        <!-- ================================================= -->
+        <!-- ERROR -->
+        <!-- ================================================= -->
+
+        <div
+            id="errorBox"
+            class="alert alert-danger error-box"
+        ></div>
+
+
+        <!-- ================================================= -->
+        <!-- RESULT -->
+        <!-- ================================================= -->
+
+        <div
+            id="resultCard"
+            class="result-card"
+        >
+
+
+            <h3 class="section-title text-center">
+
+                🧠 GuardianAI Evaluation Result
+
+            </h3>
+
+
+            <!-- SCORE -->
+
+            <div class="score-circle">
+
+                <span id="score">
+                    0%
+                </span>
+
+            </div>
+
+
+            <div class="text-center mb-4">
+
+                <span
+                    id="learningStatus"
+                    class="status-badge"
+                >
+                    Result
+                </span>
+
+            </div>
+
+
+            <!-- RESULT DETAILS -->
+
+            <div class="row g-3">
+
+
+                <div class="col-md-6">
+
+                    <div class="card border-0 bg-light p-3">
+
+                        <strong>
+                            Student
+                        </strong>
+
+                        <div id="resultStudent">
+                            —
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <div class="card border-0 bg-light p-3">
+
+                        <strong>
+                            Topic
+                        </strong>
+
+                        <div id="resultTopic">
+                            —
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <div class="card border-0 bg-light p-3">
+
+                        <strong>
+                            Learning Level
+                        </strong>
+
+                        <div id="learningLevel">
+                            —
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <div class="card border-0 bg-light p-3">
+
+                        <strong>
+                            Topic Average
+                        </strong>
+
+                        <div id="topicAverage">
+                            —
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- AI RECOMMENDATION -->
+            <!-- ================================================= -->
+
+            <div class="learning-box">
+
+                <h5>
+
+                    🧠 Personalised Learning Recommendation
+
+                </h5>
+
+                <p
+                    id="recommendation"
+                    class="mb-0"
+                >
+                    —
+                </p>
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- BUTTONS -->
+            <!-- ================================================= -->
+
+            <div class="text-center mt-4">
+
+                <a
+                    href="/learning"
+                    class="btn btn-primary me-2"
+                >
+
+                    <i class="bi bi-mortarboard"></i>
+
+                    Learning Dashboard
+
+                </a>
+
+
+                <button
+                    type="button"
+                    onclick="viewProgress()"
+                    class="btn btn-outline-primary"
+                >
+
+                    <i class="bi bi-graph-up"></i>
+
+                    View My Progress
+
+                </button>
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- JAVASCRIPT -->
+<!-- ===================================================== -->
+
+<script>
+
+
+let recognition = null;
+
+let isRecording = false;
+
+
+const recordButton =
+    document.getElementById(
+        "recordButton"
+    );
+
+
+const recordingStatus =
+    document.getElementById(
+        "recordingStatus"
+    );
+
+
+const recognizedAnswer =
+    document.getElementById(
+        "recognized_answer"
+    );
+
+
+
+/* =====================================================
+   SPEECH RECOGNITION
+===================================================== */
+
+
+const SpeechRecognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+
+if (SpeechRecognition) {
+
+
+    recognition =
+        new SpeechRecognition();
+
+
+    recognition.continuous = true;
+
+    recognition.interimResults = false;
+
+    recognition.lang = "en-US";
+
+
+    recognition.onresult =
+        function(event) {
+
+
+            let transcript = "";
+
+
+            for (
+                let i = event.resultIndex;
+                i < event.results.length;
+                i++
+            ) {
+
+                if (
+                    event.results[i].isFinal
+                ) {
+
+                    transcript +=
+                        event.results[i][0].transcript
+                        + " ";
+
+                }
+
+            }
+
+
+            if (transcript.trim()) {
+
+                recognizedAnswer.value +=
+                    transcript.trim() + " ";
+
+            }
+
+        };
+
+
+    recognition.onerror =
+        function(event) {
+
+            console.log(
+                "Speech recognition error:",
+                event.error
+            );
+
+            isRecording = false;
+
+            recordButton.classList.remove(
+                "recording"
+            );
+
+            recordButton.innerHTML =
+                '<i class="bi bi-mic-fill"></i> Start Recording';
+
+            recordingStatus.textContent =
+                "Recording stopped.";
+
+        };
+
+
+    recognition.onend =
+        function() {
+
+            if (isRecording) {
+
+                try {
+
+                    recognition.start();
+
+                } catch (error) {
+
+                    console.log(error);
+
+                }
+
+            }
+
+        };
+
+
+} else {
+
+
+    recordButton.disabled = true;
+
+    recordButton.innerHTML =
+        '<i class="bi bi-mic-mute"></i> Speech Not Supported';
+
+    recordingStatus.textContent =
+        "Please use Google Chrome for voice recording.";
+
+}
+
+
+
+/* =====================================================
+   RECORD BUTTON
+===================================================== */
+
+
+recordButton.addEventListener(
+    "click",
+    function() {
+
+
+        if (!recognition) {
+
+            alert(
+                "Speech recognition is not supported. Please use Google Chrome."
+            );
+
+            return;
+
+        }
+
+
+        if (!isRecording) {
+
+
+            recognizedAnswer.value = "";
+
+
+            try {
+
+                recognition.start();
+
+                isRecording = true;
+
+                recordButton.classList.add(
+                    "recording"
+                );
+
+                recordButton.innerHTML =
+                    '<i class="bi bi-stop-circle"></i> Stop Recording';
+
+                recordingStatus.textContent =
+                    "🔴 Recording... Speak your answer now.";
+
+            } catch (error) {
+
+                console.log(error);
+
+            }
+
+
+        } else {
+
+
+            isRecording = false;
+
+
+            try {
+
+                recognition.stop();
+
+            } catch (error) {
+
+                console.log(error);
+
+            }
+
+
+            recordButton.classList.remove(
+                "recording"
+            );
+
+            recordButton.innerHTML =
+                '<i class="bi bi-mic-fill"></i> Start Recording';
+
+            recordingStatus.textContent =
+                "Recording stopped. You can edit the recognised answer.";
+
+        }
+
+    }
+);
+
+
+
+/* =====================================================
+   FORM SUBMISSION
+===================================================== */
+
+
+document
+    .getElementById("voiceForm")
+    .addEventListener(
+        "submit",
+        async function(event) {
+
+
+            event.preventDefault();
+
+
+            const errorBox =
+                document.getElementById(
+                    "errorBox"
+                );
+
+
+            const resultCard =
+                document.getElementById(
+                    "resultCard"
+                );
+
+
+            const loading =
+                document.getElementById(
+                    "loading"
+                );
+
+
+            errorBox.style.display =
+                "none";
+
+
+            resultCard.style.display =
+                "none";
+
+
+            loading.style.display =
+                "block";
+
+
+            const formData =
+                new FormData(this);
+
+
+            try {
+
+
+                const response =
+                    await fetch(
+                        "/voice",
+                        {
+                            method: "POST",
+                            body: formData
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                loading.style.display =
+                    "none";
+
+
+                if (!response.ok || !data.success) {
+
+                    throw new Error(
+                        data.message ||
+                        "Voice evaluation failed."
+                    );
+
+                }
+
+
+                /* =========================================
+                   DISPLAY RESULT
+                ========================================= */
+
+
+                document.getElementById(
+                    "score"
+                ).textContent =
+                    data.score + "%";
+
+
+                document.getElementById(
+                    "resultStudent"
+                ).textContent =
+                    data.student_name;
+
+
+                document.getElementById(
+                    "resultTopic"
+                ).textContent =
+                    data.topic;
+
+
+                document.getElementById(
+                    "learningLevel"
+                ).textContent =
+                    data.learning_level;
+
+
+                document.getElementById(
+                    "topicAverage"
+                ).textContent =
+                    data.topic_average + "%";
+
+
+                document.getElementById(
+                    "recommendation"
+                ).textContent =
+                    data.recommendation;
+
+
+                const status =
+                    document.getElementById(
+                        "learningStatus"
+                    );
+
+
+                status.textContent =
+                    data.learning_status;
+
+
+                if (
+                    data.learning_status ===
+                    "Strong"
+                ) {
+
+                    status.style.background =
+                        "#dcfce7";
+
+                    status.style.color =
+                        "#15803d";
+
+                } else if (
+                    data.learning_status ===
+                    "Needs Practice"
+                ) {
+
+                    status.style.background =
+                        "#fef3c7";
+
+                    status.style.color =
+                        "#b45309";
+
+                } else {
+
+                    status.style.background =
+                        "#fee2e2";
+
+                    status.style.color =
+                        "#b91c1c";
+
+                }
+
+
+                resultCard.style.display =
+                    "block";
+
+
+                resultCard.scrollIntoView({
+                    behavior: "smooth"
+                });
+
+
+            } catch (error) {
+
+
+                loading.style.display =
+                    "none";
+
+
+                errorBox.textContent =
+                    error.message;
+
+
+                errorBox.style.display =
+                    "block";
+
+            }
+
+        }
+    );
+
+
+
+/* =====================================================
+   VIEW PROGRESS
+===================================================== */
+
+
+function viewProgress() {
+
+
+    const studentName =
+        document.getElementById(
+            "student_name"
+        ).value.trim();
+
+
+    if (!studentName) {
+
+        return;
+
+    }
+
+
+    /*
+       The backend creates/finds the student.
+       Reload the learning page so the user can
+       select the student and view the latest data.
+    */
+
+
+    window.location.href =
+        "/learning";
+
+}
+
+
+</script>
+
+
+</body>
+</html>
